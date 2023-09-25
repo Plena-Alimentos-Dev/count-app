@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>COUNTS</title>
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="container">
+        <button id="btnIniciar">Iniciar Contador</button>
+    <input type="text" id="txtNumero">
+    <button id="btnParar" disabled>Parar Contador</button>
+    <div id="resultado"></div>
+    </div>
+    
+
+    <script>
+        let intervalo; // Variável para armazenar o ID do intervalo
+        // Função para fazer a chamada à API
+
+        function habilitaInput() {
+            
+        }
+
+        function chamarAPI() {
+        var numero = document.getElementById('txtNumero').value;
+        fetch('http://127.0.0.1:8000/contador/'+numero)
+        .then(response => response.json())
+        .then(data => {
+            // Acessar o campo "count" do objeto retornado pela API
+            var count = data.count;
+            // Exiba o valor do campo "count" no elemento resultado
+            document.getElementById('resultado').innerText = 'Contagem de Volume: ' + count;
+        })
+        .catch(error => console.error('Erro ao chamar a API: ' + error));
+}
+
+        // Adicione um ouvinte de evento ao botão Iniciar
+        document.getElementById('btnIniciar').addEventListener('click', function() {
+            // Faça a chamada à API imediatamente ao clicar
+            chamarAPI();
+
+            // Em seguida, configure um intervalo de 7 segundos para chamadas repetidas
+            intervalo = setInterval(chamarAPI, 5000); // 7000 milissegundos = 7 segundos
+
+            // Desabilite o botão Iniciar e habilite o botão Parar
+            document.getElementById('btnIniciar').disabled = true;
+            document.getElementById('btnParar').disabled = false;
+            document.getElementById('txtNumero').disabled = true;
+        });
+
+        // Adicione um ouvinte de evento ao botão Parar
+        document.getElementById('btnParar').addEventListener('click', function() {
+            // Pare o intervalo de chamadas à API
+            clearInterval(intervalo);
+
+            document.getElementById('resultado').innerText = '';
+            document.getElementById('btnIniciar').disabled = false;
+            document.getElementById('btnParar').disabled = true;
+            document.getElementById('txtNumero').disabled = false;
+        });
+    </script>
+</body>
+</html>
